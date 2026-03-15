@@ -395,12 +395,20 @@ export default function App() {
             <div className="p-5 flex flex-col space-y-3 flex-1 bg-gray-50/50">
               <div>
                 <label className="block text-xs font-medium text-gray-500 uppercase mb-1">결제 날짜</label>
-                <input
-                  type="date"
-                  value={item.date}
-                  onChange={(e) => updateReceipt(item.id, 'date', e.target.value)}
-                  className="w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                />
+                <div className="relative group/date">
+                  <input
+                    type="date"
+                    value={item.date}
+                    onChange={(e) => updateReceipt(item.id, 'date', e.target.value)}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                  />
+                  <div className="w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm flex items-center justify-between group-hover/date:border-blue-400 transition-colors">
+                    <span className={item.date ? "text-gray-900" : "text-gray-400"}>
+                      {item.date || '날짜 선택'}
+                    </span>
+                    <Clock className="w-4 h-4 text-gray-400" />
+                  </div>
+                </div>
               </div>
               
               <div>
