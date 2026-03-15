@@ -106,19 +106,28 @@ export default function App() {
 
     setReceipts(prev => [...prev, newReceipt]);
 
+    // Cleanup reference for timeout
+    let ocrTimeout = null;
+
     try {
       // Step 1: Enhance image for better recognition
       const enhancedDataUrl = await enhanceImageForOCR(dataUrl);
       
-      // Step 2: Run OCR on the enhanced image
-      const result = await Tesseract.recognize(
+      // Step 2: Run OCR with a 60-second watchdog timeout
+      const ocrTask = Tesseract.recognize(
         enhancedDataUrl,
         'kor+eng',
         { 
           logger: m => console.log(m),
-          errorHandler: e => console.error(e)
         }
       );
+
+      const timeoutPromise = new Promise((_, reject) => {
+        ocrTimeout = setTimeout(() => reject(new Error('OCR_TIMEOUT')), 60000);
+      });
+
+      const result = await Promise.race([ocrTask, timeoutPromise]);
+      clearTimeout(ocrTimeout);
       
       const parsed = parseOCRText(result.data.text);
       const fullText = result.data.text.toLowerCase().replace(/\s/g, '');
@@ -147,7 +156,8 @@ export default function App() {
         return r;
       }));
     } catch (err) {
-      console.error(err);
+      console.error("OCR Error:", err);
+      if (ocrTimeout) clearTimeout(ocrTimeout);
       setReceipts(prev => prev.map(r => r.id === newReceipt.id ? { ...r, status: 'error' } : r));
     }
   };
@@ -358,6 +368,13 @@ export default function App() {
                 <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center text-white backdrop-blur-sm">
                   <Clock className="w-8 h-8 animate-pulse mb-2" />
                   <span className="font-medium">AI 텍스트 추출 중...</span>
+                </div>
+              )}
+              {item.status === 'error' && (
+                <div className="absolute inset-0 bg-red-500/80 flex flex-col items-center justify-center text-white backdrop-blur-sm p-4 text-center">
+                  <Clock className="w-8 h-8 mb-2 opacity-50" />
+                  <span className="font-bold text-sm">인식 실패 (시간 초과)</span>
+                  <p className="text-[10px] mt-1">인터넷 연결을 확인하거나<br/>정보를 직접 입력해 주세요.</p>
                 </div>
               )}
               {item.status === 'done' && (
