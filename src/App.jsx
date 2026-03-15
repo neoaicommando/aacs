@@ -113,7 +113,7 @@ export default function App() {
       // Step 1: Enhance image for better recognition
       const enhancedDataUrl = await enhanceImageForOCR(dataUrl);
       
-      // Step 2: Run OCR with a 60-second watchdog timeout
+      // Step 2: Run OCR with a 15-second watchdog timeout
       const ocrTask = Tesseract.recognize(
         enhancedDataUrl,
         'kor+eng',
@@ -123,7 +123,7 @@ export default function App() {
       );
 
       const timeoutPromise = new Promise((_, reject) => {
-        ocrTimeout = setTimeout(() => reject(new Error('OCR_TIMEOUT')), 60000);
+        ocrTimeout = setTimeout(() => reject(new Error('OCR_TIMEOUT')), 15000);
       });
 
       const result = await Promise.race([ocrTask, timeoutPromise]);
