@@ -281,9 +281,9 @@ export default function App() {
 
   return (
     <div className="min-h-screen pb-20 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <header className="mb-8 text-center sm:text-left">
-        <h1 className="text-3xl font-extrabold text-blue-900 tracking-tight mb-2">AACS</h1>
-        <p className="text-gray-600 text-lg">AUROS Automatic Cost Settlement</p>
+      <header className="mb-12 text-center">
+        <h1 className="text-4xl font-extrabold text-blue-900 tracking-tight mb-2">AACS</h1>
+        <p className="text-gray-600 text-lg font-medium">AUROS Automatic Cost Settlement</p>
       </header>
       
       <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 md:p-8 mb-8">
